@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
   activated: Boolean,
   deleted: Boolean,
   age: Number,
-  class: Number,
+  level: Number,
   email: {
     type: String,
     trim: true,
