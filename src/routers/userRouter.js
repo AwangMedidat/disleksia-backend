@@ -1,18 +1,18 @@
 const express = require("express");
 const router = new express.Router();
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
-require('dotenv').config()
+require("dotenv").config();
 
 router.get("/:email", async (req, res) => {
   try {
-    const email = req.params.email
-    const user = await userModel.find({email : email});
+    const email = req.params.email;
+    const user = await userModel.find({ email: email });
     res.status(200).json({
-        id : user[0]._id,
-        email: user[0].email,
-        nama : user[0].full_name
+      id: user[0]._id,
+      email: user[0].email,
+      nama: user[0].full_name,
     });
   } catch (e) {
     res.status(500).json(e);
@@ -58,7 +58,7 @@ router.post("/completed/:id", async (req, res) => {
       user.level = level;
     }
     const addUser = await user.save();
-    res.status(200).json(addUser);
+    res.status(200).json(userCourse);
   } catch (e) {
     res.status(500).json(e);
   }
@@ -75,17 +75,21 @@ router.post("/login", async (req, res) => {
       if (user.length === 0)
         throw res.status(404).json({ msg: "User Not Available" });
       const comparePassword = await bcrypt.compare(password, user[0].password);
-      const token = await jwt.sign({
-        name: user[0].full_name,
-        email: user[0].email,
-        password: user[0].password
-      }, process.env.JWT_KEY)
+      const token = await jwt.sign(
+        {
+          name: user[0].full_name,
+          email: user[0].email,
+          password: user[0].password,
+        },
+        process.env.JWT_KEY
+      );
       if (!comparePassword) res.status(400).json({ msg: "User Not Available" });
       res.status(200).json({
         _id: user[0]._id,
         email: user[0].email,
         profesi: user[0].is_teacher === 1 ? "Guru" : "Murid",
         nama: user[0].full_name,
+        course: user[0].course,
         token: token,
       });
     }
