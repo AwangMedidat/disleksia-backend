@@ -5,24 +5,25 @@ const userModel = require("../models/userModel");
 const matterModel = require("../models/matterModel")
 require("dotenv").config();
 
-router.get("/", async (req, res) => {
+router.put("/editMatter/:id", async (req, res) => {
   try {
-    // const email = req.params.email;
-    const mapel = await mapelModel.find();
-    res.status(200).json(mapel);
+    const id = req.params.id;
+    const resMatter = await matterModel.findOneAndUpdate({_id : id}, {$set : req.body});
+    res.status(200).json(resMatter);
   } catch (e) {
     res.status(500).json(e);
   }
 });
 
-router.get("/user/:id", async (req, res) => {
+router.get("/mineCourse/:userid", async (req, res) => {
     try {
-      const id = req.params.id;
-      const userCourse = await userModel
-      .findById(id)
+      const id = req.params.userid;
+      const matterCourse = await matterModel
+      .find({user : id})
       .populate("course")
+      .populate("user")
     //   const mapel = await mapelModel.find();
-      res.status(200).json(userCourse);
+      res.status(200).json(matterCourse);
     } catch (e) {
       res.status(500).json(e);
     }
@@ -31,8 +32,18 @@ router.get("/user/:id", async (req, res) => {
 router.get("/:id", async (req, res) => {
     try {
       const id = req.params.id;
-      const mapel = await mapelModel.findById(id);
-      res.status(200).json(mapel);
+      const matter = await matterModel.findById(id);
+      res.status(200).json(matter);
+    } catch (e) {
+      res.status(500).json(e);
+    }
+  });
+
+  router.delete("/:id", async (req, res) => {
+    try {
+      const id = req.params.id;
+      const matter = await matterModel.deleteOne({_id : id});
+      res.status(200).json("Deleted Success");
     } catch (e) {
       res.status(500).json(e);
     }
@@ -40,9 +51,9 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-    const newCourse = new mapelModel(req.body);
-    const course = await newCourse.save();
-    res.status(200).json(course);
+    const newMatter = new matterModel(req.body);
+    const matter = await newMatter.save();
+    res.status(200).json(matter);
   } catch (e) {
     res.status(500).json(e);
   }
