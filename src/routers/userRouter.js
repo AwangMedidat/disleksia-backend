@@ -3,6 +3,8 @@ const router = new express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
+const teacherModel = require("../models/teacherModel");
+const studentModel = require("../models/studentModel");
 require("dotenv").config();
 
 router.get("/:email", async (req, res) => {
@@ -42,23 +44,41 @@ router.post("/completed/:id", async (req, res) => {
     const { birth_date, genre, course, nisn, level } = req.body;
     const id = req.params.id;
     const user = await userModel.findById(id);
+    // console.log(user, '<<<< USER')
     const nowDate = new Date();
     const tglLahir = new Date(birth_date);
     const selisih =
       Date.parse(nowDate.toGMTString()) - Date.parse(tglLahir.toGMTString());
-    const umur = Math.round(selisih / (1000 * 60 * 60 * 24 * 365));
+    const umur = Math.floor(selisih / (1000 * 60 * 60 * 24 * 365));
     if (user.is_teacher === 1) {
-      user.age = umur;
-      user.genre = genre;
-      user.course = course;
+      const obj = {
+        age : umur,
+        genre : genre,
+        user : id,
+        course : course
+      }
+      const newTeacher = new teacherModel(obj);
+      const teacherNew = await newTeacher.save();
+      // console.log(teacherNew, '<<<< Teacher')
+      res.status(200).json(teacherNew);
     } else {
       user.age = umur;
       user.genre = genre;
       user.nisn = nisn;
       user.level = level;
+      const obj = {
+        age : umur,
+        genre : genre,
+        nisn : nisn,
+        level : level,
+        user : id
+      }
+      const newStudent = new studentModel(obj);
+      const studentNew = await newStudent.save();
+      // console.log(studentNew, '<<<< Student')
+      res.status(200).json(studentNew);
     }
-    const addUser = await user.save();
-    res.status(200).json(userCourse);
+    // const addUser = await user.save();
   } catch (e) {
     res.status(500).json(e);
   }

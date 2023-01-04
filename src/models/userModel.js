@@ -1,6 +1,5 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
 
 const userSchema = new mongoose.Schema({
   full_name: {
@@ -12,8 +11,6 @@ const userSchema = new mongoose.Schema({
   is_student: Number,
   activated: Boolean,
   deleted: Boolean,
-  age: Number,
-  level: Number,
   email: {
     type: String,
     trim: true,
@@ -25,10 +22,7 @@ const userSchema = new mongoose.Schema({
       "Please fill a valid email address",
     ],
   },
-  password: String,
-  nisn: String,
-  genre: String,
-  course: [{ type: mongoose.Schema.Types.ObjectId, ref: "course" }],
+  password: String
 });
 
 const userModel = new mongoose.model("user", userSchema);

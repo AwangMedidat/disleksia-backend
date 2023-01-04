@@ -2,6 +2,7 @@ const express = require("express");
 const router = new express.Router();
 const mapelModel = require("../models/mapelModel");
 const userModel = require("../models/userModel");
+const teacherModel = require("../models/teacherModel");
 require("dotenv").config();
 
 router.get("/", async (req, res) => {
@@ -17,11 +18,11 @@ router.get("/", async (req, res) => {
 router.get("/user/:id", async (req, res) => {
     try {
       const id = req.params.id;
-      const userCourse = await userModel
-      .findById(id)
+      const teacherCourse = await teacherModel
+      .findOne({user : id})
       .populate("course")
     //   const mapel = await mapelModel.find();
-      res.status(200).json(userCourse);
+      res.status(200).json(teacherCourse);
     } catch (e) {
       res.status(500).json(e);
     }
